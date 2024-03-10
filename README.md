@@ -1,6 +1,7 @@
 # FASTAPI Sandbox Project
 
-This repo stores sandbox application build on base of fastapi tutorial
+This repo stores sandbox application build on base of fastapi tutorial.
+Project will provide API for diagnostic laboratory
 
 # Dependencies
 
@@ -25,5 +26,5 @@ pip install -r requirements.txt
 # Run
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:laboratory_app --reload
 ```
