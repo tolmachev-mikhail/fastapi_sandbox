@@ -1,20 +1,49 @@
+## Actor: Client
+### Description: A requester analysis and can be registered in database as a patient
+### Characteristics:
+* Has properties that can be verified
+  * Name
+  * Surname
+  * Gender
+  * Date of Birth
+  * Passport ID
+  * Email
+
+* Has access to API
+* Can request an analysis via Register
+### Interaction with the system
+* Can obtain analysis result by analysis ID
+* Can get his analysis history
+
+## Actor: Receptionist
+### Description: A worker that can register a patient and submit new analysis request
+### Characteristics:
+* Has properties that can be verified
+  * Corporate Email
+  * Password
+* Has access to API
+### Interaction with the system
+* Can register client as a patient
+* Can submit a new analysis
+
+
 # Client requests analysis
 
 * Description Client requests analysis
-* Actors: Client, Passport, Receptionist, Patient, registry API
+* Actors: Client, Receptionist, registry API
 * Preconditions:
-  * Patient respect the analysis precondition guidelines
-  * Patient has valid passport
+  * Client respects the analysis precondition guidelines
+  * Client has valid passport
 * Flow:
-  * Receptionist manually validates patient passport
+  * Receptionist manually validates client passport
   * Receptionist searches for a client in database using API endpoint and catches Exception
-  * The registrar registers the client using API endpoint
+  * The registrar registers the client as patient using API endpoint
   * Receptionist collects payment via cash or any third party provider (credit card, QR code etc)
-  * The registrar submits new analysis using API
+  * Receptionist submits new analysis using API
 
 * Alternative flow:
-  * Receptionist manually validates patient passport
-  * Receptionist search for a patient using API endpoint and finds patient
+  * Receptionist manually validates client passport
+  * Receptionist search for a client using API endpoint and finds patient
   * Receptionist collects payment via cash or any third party provider (credit card, QR code etc)
   * The registrar submits new analysis for the patient
 
@@ -25,7 +54,7 @@
 # New patient registration
 
 * Description: Receptionist registers a new patient
-* Actors: Client, Passport, Receptionist, Patient, registry API
+* Actors: Client, Receptionist, registry API
 * Preconditions:
   * Client has valid passport
 * Flow: 
@@ -37,11 +66,11 @@
 # Search for a patient
 
 * Description: Receptionists searches for a client as a laboratory patient
-* Actors: Client, Passport, Receptionist, Patient, registry API
+* Actors: Client, Receptionist, registry API
 * Preconditions:
   * Client has valid passport
 * Flow:
-  * Receptionist manually validates patient passport
-  * Receptionist searches for a client database entry via registry API
+  * Receptionist manually validates clients passport
+  * Receptionist searches for a database entry via registry API
 * Exceptions:
   * No patient found
