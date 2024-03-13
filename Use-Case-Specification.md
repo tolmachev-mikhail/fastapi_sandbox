@@ -37,7 +37,7 @@
 * Flow:
   * Receptionist manually validates client passport
   * Receptionist searches for a client in database using API endpoint and catches Exception
-  * The registrar registers the client as patient using API endpoint
+  * Receptionist registers the client as patient using API endpoint
   * Receptionist collects payment via cash or any third party provider (credit card, QR code etc)
   * Receptionist submits new analysis using API
 
