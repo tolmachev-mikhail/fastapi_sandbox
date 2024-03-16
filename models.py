@@ -1,9 +1,18 @@
-from sqlalchemy import (Column, Date, Enum, Float, ForeignKey, Index, Integer,
-                        String)
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    Date,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import relationship
 
 from database import Base
-from enums import AnalysisType, PatientGender
+from enums import AnalysisType, JobTitle, PatientGender
 
 
 class Registry(Base):
@@ -13,7 +22,14 @@ class Registry(Base):
     last_name = Column(String(50), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255))
-    __table_args__ = (Index("idx_registry_name_last_name", "first_name", "last_name"),)
+    __table_args__ = (
+        Index("idx_registry_name_last_name", "first_name", "last_name"),
+        Index("idx_email", "email"),
+        CheckConstraint(
+            "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'",
+            name="check_user_email",
+        ),
+    )
     patients = relationship("Patient", uselist=False, back_populates="registry")
 
 
@@ -32,7 +48,7 @@ class Patient(Base):
 
 
 class Analysis(Base):
-    __tablename__ = "analyses"
+    __tablename__ = "analysis"
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
@@ -40,3 +56,22 @@ class Analysis(Base):
     analysis_result = Column(Float, nullable=False)
     analysis_date = Column(Date, nullable=False)
     patient = relationship("Patient", back_populates="analyses")
+
+
+class Employee(Base):
+    __tablename__ = "employees"
+
+    employee_id = Column(Integer, primary_key=True, autoincrement=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    email = Column(String(255), unique=True, nullable=False)
+    hashed_password = Column(String(255))
+    job_title = Column(Enum(JobTitle))
+    __table_args__ = (
+        Index("idx_employee_name_last_name", "first_name", "last_name"),
+        Index("idx_employee_email", "email"),
+        CheckConstraint(
+            "email = first_name || '_' || last_name || '@lab.com'",
+            name="check_employee_email",
+        ),
+    )

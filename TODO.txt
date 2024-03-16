@@ -1,7 +1,2 @@
-1) Run database server
-2) Create a database schema
-    a) Following general rule of thumb we should encode password. But it is kinda make sense to encode
-    mostly everything in this db. But in this case we can lose a lot of perfomance. But maybe this is the reason
-    why systems in real hospitals work like dog shit.
-    b) Also storing passport number was not a good idea after all
 3) Make a decision about authentication flow and authorization and provide implementation
+4) It seems like we need to add employee table first
