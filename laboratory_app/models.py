@@ -1,18 +1,9 @@
-from sqlalchemy import (
-    CheckConstraint,
-    Column,
-    Date,
-    Enum,
-    Float,
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-)
+from sqlalchemy import (CheckConstraint, Column, Date, Enum, Float, ForeignKey,
+                        Index, Integer, String)
 from sqlalchemy.orm import relationship
 
-from database import Base
-from enums import AnalysisType, JobTitle, PatientGender
+from .database import Base, engine
+from .enums import AnalysisType, JobTitle, PatientGender
 
 
 class Registry(Base):
@@ -75,3 +66,6 @@ class Employee(Base):
             name="check_employee_email",
         ),
     )
+
+
+Base.metadata.create_all(bind=engine)

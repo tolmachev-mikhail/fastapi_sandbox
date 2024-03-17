@@ -12,8 +12,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
+from laboratory_app.models import Employee, Registry
 from laboratory_app.utils import db_dependency
-from models import Employee, Registry
 
 logger = logging.getLogger(__name__)
 

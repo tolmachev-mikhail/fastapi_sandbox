@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from database import SessionLocal
+from laboratory_app.database import SessionLocal
 
 logger = logging.getLogger(__name__)
 

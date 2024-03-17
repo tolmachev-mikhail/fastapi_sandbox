@@ -1,16 +1,7 @@
-from pathlib import Path
-
-import pytest
-from dotenv import load_dotenv
-from fastapi import status
-from fastapi.testclient import TestClient
-
-load_dotenv(Path(__file__).parent / ".env")
 import os
 
-from main import app
-
-client = TestClient(app)
+import pytest
+from fastapi import status
 
 
 @pytest.mark.parametrize(
@@ -34,7 +25,7 @@ client = TestClient(app)
         },
     ],
 )
-def test_negative_auth(data: dict):
+def test_negative_auth(client, data: dict):
     headers = {
         "accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -57,7 +48,7 @@ def test_negative_auth(data: dict):
         },
     ],
 )
-def test_positive_auth(data: dict):
+def test_positive_auth(client, data: dict):
     headers = {
         "accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
