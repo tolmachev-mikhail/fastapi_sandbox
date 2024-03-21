@@ -16,3 +16,9 @@ class JobTitle(StrEnum):
     DOCTOR = "Doctor"
     LABORANT = "Laboratory Assistant"
     REGISTAR = "Registar"
+
+
+class AuthScopes(StrEnum):
+    EMPLOYEE = "employee"
+    DOCTOR = "doctor"
+    REGISTAR = "registar"

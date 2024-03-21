@@ -25,7 +25,6 @@
 * Can register client as a patient
 * Can submit a new analysis
 * Can update information about patient
-* Can get analysis result
 
 ## Actor: Laboratory Assistant
 ### Description: A worker that actually runs analysis
