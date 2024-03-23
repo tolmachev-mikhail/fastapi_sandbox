@@ -21,8 +21,12 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(Path(__file__).parent / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGO = os.getenv("ALGO")
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+ALGO = os.environ.get("ALGO", "")
+
+if SECRET_KEY == "" or ALGO == "":
+    raise EnvironmentError("Authentication parameters are not configured")
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 AUTH_SCOPES_MAPPING = {
@@ -45,15 +49,15 @@ oauth2_scheme = OAuth2PasswordBearer(
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password, hashed_password) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password: str):
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -70,7 +74,7 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: EmailStr | None = None
+    email: EmailStr
     scopes: list
 
 
@@ -84,7 +88,7 @@ async def get_current_user(
     security_scopes: SecurityScopes,
     token: Annotated[str, Depends(oauth2_scheme)],
     db: db_dependency,
-):
+) -> User:
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
@@ -96,8 +100,8 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGO])
-        email: str = payload.get("sub")
-        if email is None:
+        email = payload.get("sub")
+        if not email:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
         token_data = TokenData(email=email, scopes=token_scopes)
@@ -110,7 +114,7 @@ async def get_current_user(
     else:
         logger.debug("Trying to find user in patient database")
         user = db.query(Registry).filter(Registry.email == token_data.email).first()
-    if user is None:
+    if not user:
         logger.error(f"No patient/employee was found for {token_data.email}")
         raise credentials_exception
     for scope in security_scopes.scopes:
@@ -120,8 +124,7 @@ async def get_current_user(
                 detail="Not enough permissions",
                 headers={"WWW-Authenticate": authenticate_value},
             )
-    user = User(email=user.email, first_name=user.first_name, last_name=user.last_name)
-    return user
+    return User(email=user.email, first_name=user.first_name, last_name=user.last_name)  # type: ignore[arg-type]
 
 
 @router.post("/token", status_code=status.HTTP_200_OK)
@@ -131,15 +134,18 @@ def login_for_auth_token(
     if form_data.username.endswith("lab.com"):
         logger.debug("Trying to find user in employee database")
         user = db.query(Employee).filter(Employee.email == form_data.username).first()
-        available_scopes = AUTH_SCOPES_MAPPING[user.job_title]
     else:
         logger.debug("Trying to find user in patient database")
         user = db.query(Registry).filter(Registry.email == form_data.username).first()
-        available_scopes = []
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
+    available_scopes = (
+        AUTH_SCOPES_MAPPING[user.job_title]
+        if form_data.username.endswith("lab.com")
+        else []
+    )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={

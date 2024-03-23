@@ -1,6 +1,6 @@
-from sqlalchemy import (CheckConstraint, Column, Date, Enum, Float, ForeignKey, JSON,
-                        Index, Integer, String)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (JSON, CheckConstraint, Column, Date, Enum, Float,
+                        ForeignKey, Index, Integer, String)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base, engine
 from .enums import AnalysisType, JobTitle, PatientGender
@@ -29,7 +29,7 @@ class Patient(Base):
 
     patient_id = Column(Integer, primary_key=True, autoincrement=True)
     registry_id = Column(Integer, ForeignKey("registry.registry_id"))
-    gender = Column(Enum(PatientGender), nullable=False)
+    gender: Mapped[PatientGender] = mapped_column(Enum(PatientGender), nullable=False)
     date_of_birth = Column(Date, nullable=False)
     analyses = relationship("Analysis", back_populates="patient")
     registry = relationship("Registry", back_populates="patients")
@@ -40,7 +40,9 @@ class Analysis(Base):
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
-    analysis_type = Column(Enum(AnalysisType), nullable=False)
+    analysis_type: Mapped[AnalysisType] = mapped_column(
+        Enum(AnalysisType), nullable=False
+    )
     analysis_result = Column(JSON)
     analysis_date = Column(Date)
     patient = relationship("Patient", back_populates="analyses")
@@ -54,7 +56,7 @@ class Employee(Base):
     last_name = Column(String(50), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255))
-    job_title = Column(Enum(JobTitle))
+    job_title: Mapped[JobTitle] = mapped_column(Enum(JobTitle))
     __table_args__ = (
         Index("idx_employee_name_last_name", "first_name", "last_name"),
         Index("idx_employee_email", "email"),
