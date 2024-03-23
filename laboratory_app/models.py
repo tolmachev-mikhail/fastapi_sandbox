@@ -1,4 +1,4 @@
-from sqlalchemy import (CheckConstraint, Column, Date, Enum, Float, ForeignKey,
+from sqlalchemy import (CheckConstraint, Column, Date, Enum, Float, ForeignKey, JSON,
                         Index, Integer, String)
 from sqlalchemy.orm import relationship
 
@@ -29,11 +29,8 @@ class Patient(Base):
 
     patient_id = Column(Integer, primary_key=True, autoincrement=True)
     registry_id = Column(Integer, ForeignKey("registry.registry_id"))
-    first_name = Column(String(50), nullable=False)
-    last_name = Column(String(50), nullable=False)
     gender = Column(Enum(PatientGender), nullable=False)
-    data_of_birth = Column(Date, nullable=False)
-    __table_args__ = (Index("idx_patient_name_last_name", "first_name", "last_name"),)
+    date_of_birth = Column(Date, nullable=False)
     analyses = relationship("Analysis", back_populates="patient")
     registry = relationship("Registry", back_populates="patients")
 
@@ -44,8 +41,8 @@ class Analysis(Base):
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
     patient_id = Column(Integer, ForeignKey("patients.patient_id"))
     analysis_type = Column(Enum(AnalysisType), nullable=False)
-    analysis_result = Column(Float, nullable=False)
-    analysis_date = Column(Date, nullable=False)
+    analysis_result = Column(JSON)
+    analysis_date = Column(Date)
     patient = relationship("Patient", back_populates="analyses")
 
 
