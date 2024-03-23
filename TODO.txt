@@ -1,2 +1,6 @@
-3) Make a decision about authentication flow and authorization and provide implementation
-4) It seems like we need to add employee table first
+3) Make a decision about authentication flow and authorization and provide implementation / done
+4) It seems like we need to add employee table first /done
+5) Update db schema. Basicly we have no need to store patient name/surname in Patient table. Less people know == better.
+And we reducing inforamtion duplication. Aslo analysis should be a JSON.  /done
+6) Adapt system to a real world scenario: you come to lab, register and get a password via email/sms. If for some reason we failed to do
+so - rollback. For now on lets imagine that everything works fine and user will always get password.

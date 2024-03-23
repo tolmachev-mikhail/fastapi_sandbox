@@ -78,9 +78,11 @@
   * Client has valid passport
 * Flow: 
   * Receptionist manually validates patient passport
-  * Receptionist submits name, surname, gender, date of birth, passport ID via registry API
+  * Receptionist submits name, surname, email via system endpoint
+  * System sends generated password via email to user
+  * After confirmation from user receptionist proceed with patient information
 * Exceptions:
-  * Client has already been registered before
+  * Email has already been used before
 
 # Search for a patient
 
